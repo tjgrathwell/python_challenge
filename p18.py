@@ -13,10 +13,25 @@ fullfile = GzipFile('deltas.gz')
 file_a = []
 file_b = []
 for line in fullfile:
-    line = line.strip()
-    file_a.append(line[:53])
-    file_b.append(line[56:])
+    file_a.append(line[:53].strip())
+    file_b.append(line[56:].strip())
 
 import difflib
-d = difflib.Differ()
-print '\n'.join(d.compare(file_a, file_b))
+one, two, three = [], [], []
+for line in difflib.ndiff(file_a, file_b):
+    if len(line) < 3:
+        continue
+    if line.startswith('-'):
+        one.append(line[2:])
+    elif line.startswith('+'):
+        two.append(line[2:])
+    else:
+        three.append(line[2:])
+        
+for file,filename in [(one,'diffone.png'),(two,'difftwo.png'),(three,'diffthree.png')]:
+    of = open(filename,'wb')
+    for line in file:
+        for hex in line.split(' '):
+            of.write(chr(int(hex,16)))
+            
+# l/p butter/fly for ../hex/bin.html
