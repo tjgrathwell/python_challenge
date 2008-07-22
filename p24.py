@@ -12,6 +12,10 @@
 import Image
 im = Image.open('maze.png')
 
+white = (255,255,255,255)
+blue = (0,0,255,255)
+
+# seed algorithm with entrance square and the only valid exit out of it
 a,b = im.size[0]-2,0
 path = [(a,b,im.getpixel((a,b)),[(a,b+1)])]
 in_maze = True
@@ -24,14 +28,11 @@ while in_maze:
         path.pop()
         continue
 
-    if px == (255,255,255,255):
-        path.pop()
-        continue
-    if px == (0,0,255,255):
+    if px in [white,blue]:
         path.pop()
         continue
         
-    im.putpixel((x,y), (0,0,255,255))
+    im.putpixel((x,y), blue)
         
     if remaining_exits:
         next_x, next_y = remaining_exits.pop()
@@ -42,6 +43,11 @@ while in_maze:
         path.pop()
         im.putpixel((x,y), px)
 
-im.save('borked.png')
-    
-print path
+# if you want to see a cool picture:
+# im.save('borked.png')
+
+of = open('maze.zip','wb')
+# Every other character in the maze is full-black; just use the valid ones. produces a zipfile with a jpeg that says 'lake', and also 'mybroken.zip'
+for p in path[1::2]:
+    print p[2]
+    of.write(chr(p[2][0]))
